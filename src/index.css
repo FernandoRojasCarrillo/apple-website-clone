@@ -22,7 +22,7 @@ canvas {
   touch-action: none;
 }
 
-.scrim-max-width {
+.screen-max-width {
   margin-inline-start: auto;
   margin-inline-end: auto;
   position: relative;
@@ -35,7 +35,7 @@ canvas {
   }
 
   .nav-height {
-    @apply h-[calc(100vh-60px)]
+    @apply min-h-[calc(100vh-60px)]
   }
 
   .btn {
