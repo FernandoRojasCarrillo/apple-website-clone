@@ -4,8 +4,11 @@ import { useRef } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { pauseImg, playImg, replayImg } from "../utils";
 import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const VideoCarousel = () => {
   const videoRef = useRef([]);
@@ -25,6 +28,12 @@ const VideoCarousel = () => {
   const { isEnd, startPlay, videoId, isLastVideo, isPlaying } = video;
 
   useGSAP(() => {
+    gsap.to("#slider", {
+      transform: `translateX(${-100 * videoId}%)`,
+      duration: 2,
+      ease: "power2.inout",
+    });
+
     gsap.to("#video", {
       scrollTrigger: {
         trigger: "#video",
@@ -71,7 +80,7 @@ const VideoCarousel = () => {
             });
 
             gsap.to(span[videoId], {
-              width: `${progress}%`,
+              width: `${currentProgress}%`,
               backgroundColor: "white",
             });
           }
@@ -93,8 +102,10 @@ const VideoCarousel = () => {
       }
 
       const animUpdate = () => {
-        anim.progress(videoRef.current[videoId]) /
-          hightlightsSlides[videoId].videoDuration;
+        anim.progress(
+          videoRef.current[videoId]?.currentTime /
+            hightlightsSlides[videoId].videoDuration
+        );
       };
 
       if (isPlaying) {
@@ -117,7 +128,10 @@ const VideoCarousel = () => {
         setVideo((prev) => ({ ...prev, isLastVideo: false, videoId: 0 }));
         break;
       case "play":
-        setVideo((prev) => ({ ...prev, startPlay: true }));
+        setVideo((prev) => ({ ...prev, isPlaying: !prev.isPlaying }));
+        break;
+      case "pause":
+        setVideo((prev) => ({ ...prev, isPlaying: !prev.isPlaying }));
         break;
       default:
         break;
@@ -136,6 +150,7 @@ const VideoCarousel = () => {
                   playsInline={true}
                   preload="auto"
                   muted
+                  className={`${list.id === 2 && "translate-x-44"} pointer-events-none`}
                   ref={(el) => (videoRef.current[i] = el)}
                   onEnded={() =>
                     i !== 3
